@@ -1,0 +1,68 @@
+# ============================================
+# Kustomization - Production Overlay
+# ============================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: loja-veloz-prod
+
+resources:
+  - ../../base
+
+nameSuffix: -prod
+
+commonLabels:
+  environment: production
+
+images:
+  - name: loja-veloz/api-gateway
+    newTag: v1.0.0
+  - name: loja-veloz/pedidos
+    newTag: v1.0.0
+  - name: loja-veloz/pagamentos
+    newTag: v1.0.0
+  - name: loja-veloz/estoque
+    newTag: v1.0.0
+
+# Patches for production environment
+patches:
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: api-gateway-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: api-gateway-hpa
+      spec:
+        minReplicas: 3
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: pedidos-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: pedidos-hpa
+      spec:
+        minReplicas: 3
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: pagamentos-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: pagamentos-hpa
+      spec:
+        minReplicas: 3
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: estoque-hpa
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: estoque-hpa
+      spec:
+        minReplicas: 3

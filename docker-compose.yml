@@ -1,0 +1,148 @@
+version: '3.8'
+
+# ============================================
+# Loja Veloz - E-commerce Microservices
+# Docker Compose for Local Development
+# ============================================
+
+services:
+  # ==========================================
+  # API Gateway
+  # ==========================================
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+      target: production
+    container_name: loja-veloz-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - PEDIDOS_SERVICE_URL=http://pedidos:3001
+      - PAGAMENTOS_SERVICE_URL=http://pagamentos:3002
+      - ESTOQUE_SERVICE_URL=http://estoque:3003
+      - API_KEY=${API_KEY:-loja-veloz-secret-key-2024}
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - pedidos
+      - pagamentos
+      - estoque
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # ==========================================
+  # Pedidos Service
+  # ==========================================
+  pedidos:
+    build:
+      context: ./services/pedidos
+      dockerfile: Dockerfile
+      target: production
+    container_name: loja-veloz-pedidos
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - ESTOQUE_SERVICE_URL=http://estoque:3003
+      - PAGAMENTOS_SERVICE_URL=http://pagamentos:3002
+    networks:
+      - backend
+    depends_on:
+      - estoque
+      - pagamentos
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # ==========================================
+  # Pagamentos Service
+  # ==========================================
+  pagamentos:
+    build:
+      context: ./services/pagamentos
+      dockerfile: Dockerfile
+      target: production
+    container_name: loja-veloz-pagamentos
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # ==========================================
+  # Estoque Service
+  # ==========================================
+  estoque:
+    build:
+      context: ./services/estoque
+      dockerfile: Dockerfile
+      target: production
+    container_name: loja-veloz-estoque
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+  backend:
+    driver: bridge
+    internal: false
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
+
+# ==========================================
+# Volumes (uncomment for persistence)
+# ==========================================
+# volumes:
+#   postgres_data:
+#     driver: local

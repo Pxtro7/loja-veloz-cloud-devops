@@ -1,0 +1,34 @@
+# ============================================
+# ConfigMap - Application Configuration
+# ============================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loja-veloz-config
+  namespace: loja-veloz
+  labels:
+    app.kubernetes.io/name: loja-veloz
+    app.kubernetes.io/component: configmap
+data:
+  # Service URLs (internal cluster DNS)
+  PEDIDOS_SERVICE_URL: "http://pedidos-service:3001"
+  PAGAMENTOS_SERVICE_URL: "http://pagamentos-service:3002"
+  ESTOQUE_SERVICE_URL: "http://estoque-service:3003"
+  # Node environment
+  NODE_ENV: "production"
+  # Logging
+  LOG_LEVEL: "info"
+---
+# ============================================
+# ConfigMap - API Gateway
+# ============================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-gateway-config
+  namespace: loja-veloz
+  labels:
+    app.kubernetes.io/name: api-gateway
+    app.kubernetes.io/component: configmap
+data:
+  PORT: "3000"

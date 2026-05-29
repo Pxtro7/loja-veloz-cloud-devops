@@ -1,0 +1,68 @@
+# ============================================
+# Kustomization - Development Overlay
+# ============================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: loja-veloz-dev
+
+resources:
+  - ../../base
+
+nameSuffix: -dev
+
+commonLabels:
+  environment: development
+
+images:
+  - name: loja-veloz/api-gateway
+    newTag: dev
+  - name: loja-veloz/pedidos
+    newTag: dev
+  - name: loja-veloz/pagamentos
+    newTag: dev
+  - name: loja-veloz/estoque
+    newTag: dev
+
+# Patches for development environment
+patches:
+  - target:
+      kind: Deployment
+      name: api-gateway
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-gateway
+      spec:
+        replicas: 1
+  - target:
+      kind: Deployment
+      name: pedidos
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: pedidos
+      spec:
+        replicas: 1
+  - target:
+      kind: Deployment
+      name: pagamentos
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: pagamentos
+      spec:
+        replicas: 1
+  - target:
+      kind: Deployment
+      name: estoque
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: estoque
+      spec:
+        replicas: 1

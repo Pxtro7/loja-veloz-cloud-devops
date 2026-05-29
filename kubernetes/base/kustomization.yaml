@@ -1,0 +1,32 @@
+# ============================================
+# Kustomization - Base Resources
+# ============================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: loja-veloz
+
+resources:
+  - namespace.yaml
+  - service-account.yaml
+  - configmap.yaml
+  - secret.yaml
+  - api-gateway-deployment.yaml
+  - pedidos-deployment.yaml
+  - pagamentos-deployment.yaml
+  - estoque-deployment.yaml
+  - hpa.yaml
+
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/version: "1.0.0"
+
+images:
+  - name: loja-veloz/api-gateway
+    newTag: latest
+  - name: loja-veloz/pedidos
+    newTag: latest
+  - name: loja-veloz/pagamentos
+    newTag: latest
+  - name: loja-veloz/estoque
+    newTag: latest
