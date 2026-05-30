@@ -402,10 +402,8 @@ Para releases de maior risco:
 
 MIT License - Veja [LICENSE](LICENSE) para detalhes.
 
-## 👥 Autores
+## LINK do video pitch
 
-Projeto desenvolvido para disciplina de Cloud DevOps.
-
----
+https://youtu.be/VXn-jSdxfLY
 
 **Cloud DevOps: Orchestrating Containers and Microservices**
